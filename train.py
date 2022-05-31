@@ -1,11 +1,15 @@
 import tensorflow as tf
 from random import randint
-from os import listdir
+from argparse import ArgumentParser
 # import matplotlib.pyplot as plt
 # To js: https://www.cnblogs.com/tujia/p/13862365.html
 # https://github.com/El-Chiang/CatFace
 
-data_dir = 'ustc'
+parser = ArgumentParser(description='Train and save model for recognizing.')
+parser.add_argument('-i', '--input', help='Image dataset directory for training.', required=True)
+parser.add_argument('-o', '--output', help='Output model directory.', default='./model')
+args = parser.parse_args()
+data_dir = args.input
 batch_size = 16
 img_size = (256, 256)
 seed = randint(1, 10000)
@@ -65,4 +69,4 @@ model.fit(
     validation_data=val_ds,
     epochs=8
 )
-model.save('./model_964')
+model.save(args.output)
