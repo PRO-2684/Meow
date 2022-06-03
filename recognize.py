@@ -13,13 +13,23 @@ def load_and_preprocess_image(path):
     image = tf.image.decode_jpeg(image, channels=3)
     return image
 
-paths = [path for path in argv if (path.endswith('.jpg') and isfile(path))]
-path_ds = tf.data.Dataset.from_tensor_slices(paths)
-img_ds = path_ds.map(load_and_preprocess_image).batch(len(path_ds)).prefetch(buffer_size=AUTOTUNE)
-prediction = [ probs for probs in model(next(iter(img_ds))) ]
-for index, probs in enumerate(prediction):
-    cat_n = argmax(probs)
-    cat = cats[cat_n]
-    prob = probs[cat_n]
-    print(f'"{paths[index]}": Cat "{cat}", probability {prob * 100:.3f}%.')
+
+def recognize(filenames):
+    results = []
+    paths = filenames
+    path_ds = tf.data.Dataset.from_tensor_slices(paths)
+    img_ds = path_ds.map(load_and_preprocess_image).batch(len(path_ds)).prefetch(buffer_size=AUTOTUNE)
+    prediction = [ probs for probs in model(next(iter(img_ds))) ]
+    for probs in prediction:
+        cat_n = argmax(probs)
+        cat = cats[cat_n]
+        prob = probs[cat_n]
+        results.append((cat, prob))
+    return results
+
+if __name__ == "__main__":
+    paths = [path for path in argv if (path.endswith('.jpg') and isfile(path))]
+    r = recognize(paths)
+    for index, result in enumerate(r):
+        print(f'"{paths[index]}": Cat "{result[0]}", probability {result[1] * 100:.3f}%.')
 
