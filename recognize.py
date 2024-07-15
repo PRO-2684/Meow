@@ -32,4 +32,3 @@ if __name__ == "__main__":
     r = recognize(paths)
     for index, result in enumerate(r):
         print(f'"{paths[index]}": Cat "{result[0]}", probability {result[1] * 100:.3f}%.')
-

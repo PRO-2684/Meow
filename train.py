@@ -41,23 +41,23 @@ AUTOTUNE = tf.data.AUTOTUNE
 train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 num_classes = len(class_names)
-nb_epoch = 16
+nb_epoch = 8
 nb_filters = 32  # number of convolutional filter
 nb_pool = 2  # size of pooling area for max pooling
 nb_conv = 3  # convolution kernal size
 model = tf.keras.Sequential([
-    tf.keras.layers.Rescaling(1./255),
-    tf.keras.layers.Conv2D(nb_filters, nb_conv, nb_conv, activation='relu', input_shape=(3,) + img_size),
-    tf.keras.layers.Conv2D(nb_filters, nb_conv, nb_conv),
-    tf.keras.layers.Activation('relu'),
-    tf.keras.layers.MaxPooling2D(pool_size=(nb_pool, nb_pool)),
-    tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Activation('relu'),
-    tf.keras.layers.Dropout(0.3),
-    tf.keras.layers.Dense(num_classes),
-    tf.keras.layers.Activation('softmax')
+    tf.keras.layers.Rescaling(1./255), # normalize pixel values to be between 0 and 1
+    tf.keras.layers.Conv2D(nb_filters, nb_conv, nb_conv, activation='relu', input_shape=(3,) + img_size), # 3 is the number of channels: RGB
+    tf.keras.layers.Conv2D(nb_filters, nb_conv, nb_conv), # 3 is the number of channels: RGB
+    tf.keras.layers.Activation('relu'), # ReLU activation function
+    tf.keras.layers.MaxPooling2D(pool_size=(nb_pool, nb_pool)), # max pooling layer
+    tf.keras.layers.Dropout(0.2), # apply dropout to prevent overfitting
+    tf.keras.layers.Flatten(), # flatten the 2D arrays for fully connected layers
+    tf.keras.layers.Dense(128, activation='relu'), # dense layer with 128 neurons
+    tf.keras.layers.Activation('relu'), # ReLU activation function
+    tf.keras.layers.Dropout(0.3), # apply dropout to prevent overfitting
+    tf.keras.layers.Dense(num_classes), # dense layer with num_classes neurons
+    tf.keras.layers.Activation('softmax') # softmax activation function
 ])
 model.compile(
     optimizer='adam',
@@ -67,6 +67,6 @@ model.compile(
 model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=8
+    epochs=nb_epoch
 )
 model.save(args.output)
